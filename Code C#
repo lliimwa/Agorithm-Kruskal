@@ -81,24 +81,22 @@ public class Network // Класс, представляющий сеть
 
 public class Program
 {
-    public static void Main(string[] args) // Основной класс с методом Main, где создается экземпляр сети, добавляются соединения и вызывается метод для выполнения алгоритма Крускала
+    public static void Main(string[] args) // Основной класс с методом Main, где создается экземпляр сети, добавляются соединения и вызывается метод для выполнения алгоритма Краскала
     {
-        var network = new Network(9); // Создание сети с (8+1) вершинами
+        var network = new Network(8); // Создание сети с (8-1) вершинами
 
-        network.AddConnection(0, 1, 3); // Добавление соединений в сеть
-        network.AddConnection(0, 3, 1);
-        network.AddConnection(0, 4, 2);
-        network.AddConnection(3, 4, 2);
-        network.AddConnection(4, 5, 1);
-        network.AddConnection(1, 5, 2);
-        network.AddConnection(4, 6, 2);
-        network.AddConnection(6, 5, 3);
-        network.AddConnection(6, 7, 5);
-        network.AddConnection(7, 8, 1);
-        network.AddConnection(5, 7, 3);
-        network.AddConnection(5, 8, 4);
-        network.AddConnection(5, 2, 6);
-        network.AddConnection(2, 8, 4);
+        network.AddConnection(0, 6, 51); // Добавление соединений в сеть
+        network.AddConnection(0, 1, 32);
+        network.AddConnection(0, 2, 29);
+        network.AddConnection(4, 3, 34);
+        network.AddConnection(5, 3, 18);
+        network.AddConnection(7, 4, 46);
+        network.AddConnection(5, 4, 40);
+        network.AddConnection(0, 5, 60);
+        network.AddConnection(6, 4, 51);
+        network.AddConnection(7, 0, 31);
+        network.AddConnection(7, 6, 25);
+        network.AddConnection(7, 1, 21);
 
         network.ExecuteKruskal(); // Выполнение алгоритма Краскала и вывод результата
     }
