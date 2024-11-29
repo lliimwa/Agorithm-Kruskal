@@ -1,0 +1,105 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+public class Connection // Cоединение между двумя вершинами
+{
+    public int From { get; set; } // Начальная вершмна
+    public int To { get; set; } // Конечная вершина
+    public int Weight { get; set; } // Вес ребра
+}
+
+public class Network // Класс, представляющий сеть
+{
+    public int NodeCount { get; } // Общее количество вершин в сети
+    private List<Connection> connections; // Список соединений
+
+    public Network(int nodeCount) // Конструктор класса, который принимает количество вершин и инициализирует список соединений
+    {
+        NodeCount = nodeCount; // Инициализация количества вершин
+        connections = new List<Connection>(); // Инициализация списка соединений
+    }
+
+    public void AddConnection(int start, int end, int weight) // Метод, который добавляет новое соединение в сеть, создавая экземпляр класса Connection и добавляя его в список
+    {
+        connections.Add(new Connection { From = start, To = end, Weight = weight }); // Добавление нового соединения в список
+    }
+
+    private int FindParent(int[] parent, int vertex) // Метод, который находит корень(родителя) данной вершины в массиве родителей
+    {
+        if (parent[vertex] == vertex) // Проверка, является ли вершина корнем
+            return vertex; // Если да, возвращаем вершину
+        return FindParent(parent, parent[vertex]); // Рекурсивный вызов для поиска корня
+    }
+
+    private void Union(int[] parent, int[] rank, int xroot, int yroot) // Метод, объединяющий два множества(объединяя их корни)
+    {
+        if (rank[xroot] < rank[yroot])
+            parent[xroot] = yroot; // Привязываем корень x к корню y
+        else if (rank[xroot] > rank[yroot])
+            parent[yroot] = xroot; // Привязываем корень y к корню x
+        else
+        {
+            parent[yroot] = xroot; // Привязываем y к x
+            rank[xroot]++; // Увеличиваем ранг корня x
+        }
+    }
+
+    public void ExecuteKruskal() // Инициализирует список результатов, сортирует соединения, а затем заполняет массивы родителей и рангов
+    {
+        var result = new List<Connection>(); // Список для хранения результатов (остовное дерево)
+        connections = connections.OrderBy(c => c.Weight).ToList(); // Сортируем соединения по весам
+
+        int[] parent = new int[NodeCount]; // Массив для хранения родителей
+        int[] rank = new int[NodeCount]; // Массив для хранения рангов
+
+        for (int i = 0; i < NodeCount; i++)
+        {
+            parent[i] = i; // Инициализация каждого узла самим собой
+            rank[i] = 0; // Инициализация ранга
+        }
+
+        foreach (var edge in connections) // Цикл по всем соединениям: для каждого соединения находит корни и, если они различны, добавляет соединение в результат и объединяет деревья
+        {
+            int x = FindParent(parent, edge.From); // Находим корень для начала соединения
+            int y = FindParent(parent, edge.To); // Находим корень для конца соединения
+
+            if (x != y) // Если корни разные, соединение не образует цикл
+            {
+                result.Add(edge); // Добавляем соединение в результат
+                Union(parent, rank, x, y); // Объединяем два дерева
+            }
+        }
+
+        Console.WriteLine("Минимальное остовное дерево:"); // Выводит список соединений в минимальном остовном дереве
+        foreach (var connection in result)
+        {
+            Console.WriteLine($"{connection.From} - {connection.To}: {connection.Weight}"); // Вывод результатов
+        }
+    }
+}
+
+public class Program
+{
+    public static void Main(string[] args) // Основной класс с методом Main, где создается экземпляр сети, добавляются соединения и вызывается метод для выполнения алгоритма Крускала
+    {
+        var network = new Network(9); // Создание сети с (8+1) вершинами
+
+        network.AddConnection(0, 1, 3); // Добавление соединений в сеть
+        network.AddConnection(0, 3, 1);
+        network.AddConnection(0, 4, 2);
+        network.AddConnection(3, 4, 2);
+        network.AddConnection(4, 5, 1);
+        network.AddConnection(1, 5, 2);
+        network.AddConnection(4, 6, 2);
+        network.AddConnection(6, 5, 3);
+        network.AddConnection(6, 7, 5);
+        network.AddConnection(7, 8, 1);
+        network.AddConnection(5, 7, 3);
+        network.AddConnection(5, 8, 4);
+        network.AddConnection(5, 2, 6);
+        network.AddConnection(2, 8, 4);
+
+        network.ExecuteKruskal(); // Выполнение алгоритма Краскала и вывод результата
+    }
+}
